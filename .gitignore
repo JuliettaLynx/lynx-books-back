@@ -1,0 +1,136 @@
+# Ignore compiled binaries and build outputs
+bin/
+obj/
+out/
+artifacts/
+*.dll
+*.exe
+*.exe.config
+*.pdb
+*.cache
+*.nupkg
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.suo
+*.vs/
+*.vsp
+*.vspx
+*.sln.docstates
+
+# Ignore Visual Studio temporary files
+*.vspscc
+*.vssscc
+*.vstemplate
+_ReSharper.Caches/
+*.resharper
+*.resharper.user
+*.sln.ide/
+*.vs/
+.vscode/
+.idea/
+
+# Ignore Rider specific files
+.idea/
+*.sln.iml
+.Rider/
+
+# Ignore test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.coveragex
+*.htmlcoverage
+
+# Ignore logs and crash dumps
+logs/
+*.log
+*.txt.log
+*.mdmp
+*.iobj
+*.ipdb
+
+# Ignore local configuration files (e.g., app secrets)
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+secrets.json
+*.secrets.json
+*.local.json
+*.private.json
+
+# Ignore user-defined settings and temporary files
+*.tmp
+*.temp
+*.pid
+*.heapdump
+*.swo
+*.swp
+
+# Ignore Entity Framework migration snapshots? (keep migrations, but ignore model snapshots if needed)
+/Migrations/EntityFrameworkCore/*.Snapshot.cs
+*.dbmdl
+
+# Ignore database files (if any)
+*.mdf
+*.ldf
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore NuGet packages and package manager
+packages/
+*.nupkg
+*.nuget.props
+*.nuget.targets
+NuGet.config
+!NuGet.config.example
+project.lock.json
+project.assets.json
+
+# Ignore build and publish outputs
+publish/
+_deploy/
+_deploy_/
+_deployment/
+_compiled/
+
+# Ignore certificates and private keys
+*.pfx
+*.p12
+*.snk
+*.key
+*.cer
+*.crt
+
+# Ignore Docker-related local artifacts
+.docker/
+docker-compose.override.yml
+*.dockerignore
+
+# Ignore any local environment files
+.env
+.env.*
+!.env.example
+
+# Ignore OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore background tasks / runtime data
+*.pid
+*.lck
+*.lock
+
+# Ignore node modules (if using any JavaScript frontend within the backend)
+node_modules/
+bower_components/
+
+# Ignore Python virtual environments (if any Python tooling used)
+__pycache__/
+*.py[cod]
+.env-py/
+venv/

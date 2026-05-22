@@ -18,4 +18,5 @@ public class User
     public List<RefreshToken> RefreshTokens { get; set; } = new();
     public List<Book> Books { get; set; } = new();
     public List<Session> Sessions { get; set; } = new();
+    public List<Wishlist> Wishlists { get; set; } = new();
 }

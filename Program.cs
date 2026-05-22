@@ -9,7 +9,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. База данных: SQLite или PostgreSQL
+// База данных: SQLite или PostgreSQL
 var usePostgres = builder.Configuration.GetValue<bool>("UsePostgres");
 if (usePostgres)
 {
@@ -27,7 +27,7 @@ else
 
 
 
-// 2. JWT аутентификация
+// JWT аутентификация
 var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -46,7 +46,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// 3. Контроллеры, Swagger
+// Контроллеры, Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -76,16 +76,17 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 4. Регистрация сервисов (IoC)
+// Регистрация сервисов (IoC)
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
-builder.Services.AddScoped<IUserService, UserService>();   // <-- КЛЮЧЕВОЕ
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<JwtService>();
 // builder.Services.AddHttpClient<GoogleAuthService>();
 builder.Services.AddHttpContextAccessor();
 
-// 5. CORS – разрешаем фронтенд (значение из конфигурации)
+// CORS – разрешаем фронтенд (значение из конфигурации)
 var frontendUrl = builder.Configuration["FrontendUrl"];
 if (string.IsNullOrEmpty(frontendUrl))
 {
@@ -107,17 +108,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 6. Автоматическое создание БД и применение миграций
+// Автоматическое создание БД и применение миграций
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (usePostgres)
-        await dbContext.Database.MigrateAsync();   // для PostgreSQL
-    else
-        dbContext.Database.EnsureCreated();       // для SQLite (локально)
+    await dbContext.Database.MigrateAsync();
 }
 
-// 7. Конвейер обработки запросов
+// Конвейер обработки запросов
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

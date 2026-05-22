@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<Session> Sessions { get; set; }
+    public DbSet<Wishlist> Wishlists { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,6 +33,12 @@ public class AppDbContext : DbContext
             .HasForeignKey(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Wishlist>()
+            .HasOne(w => w.User)
+            .WithMany(u => u.Wishlists)
+            .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Связь сессии с книгой
         modelBuilder.Entity<Session>()
             .HasOne(s => s.Book)
@@ -46,5 +53,10 @@ public class AppDbContext : DbContext
             .HasIndex(s => s.BookId);
         modelBuilder.Entity<Book>()
             .HasIndex(b => b.UserId);
+
+        modelBuilder.Entity<Wishlist>()
+            .HasIndex(w => new { w.UserId, w.Priority });
+        modelBuilder.Entity<Wishlist>()
+            .HasIndex(w => w.UserId);
     }
 }

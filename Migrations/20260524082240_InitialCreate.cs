@@ -84,7 +84,7 @@ namespace lynxbooksback.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Wishlist",
+                name: "Wishlists",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
@@ -101,9 +101,9 @@ namespace lynxbooksback.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Wishlist", x => x.Id);
+                    table.PrimaryKey("PK_Wishlists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Wishlist_Users_UserId",
+                        name: "FK_Wishlists_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -178,13 +178,13 @@ namespace lynxbooksback.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Wishlist_UserId",
-                table: "Wishlist",
+                name: "IX_Wishlists_UserId",
+                table: "Wishlists",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Wishlist_UserId_Priority",
-                table: "Wishlist",
+                name: "IX_Wishlists_UserId_Priority",
+                table: "Wishlists",
                 columns: new[] { "UserId", "Priority" });
         }
 
@@ -198,7 +198,7 @@ namespace lynxbooksback.Migrations
                 name: "Sessions");
 
             migrationBuilder.DropTable(
-                name: "Wishlist");
+                name: "Wishlists");
 
             migrationBuilder.DropTable(
                 name: "Books");

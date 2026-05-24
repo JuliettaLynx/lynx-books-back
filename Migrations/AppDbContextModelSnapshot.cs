@@ -243,7 +243,7 @@ namespace lynxbooksback.Migrations
 
                     b.HasIndex("UserId", "Priority");
 
-                    b.ToTable("Wishlist");
+                    b.ToTable("Wishlists");
                 });
 
             modelBuilder.Entity("LynxBooks.Backend.Models.Book", b =>
@@ -290,7 +290,7 @@ namespace lynxbooksback.Migrations
             modelBuilder.Entity("LynxBooks.Backend.Models.Wishlist", b =>
                 {
                     b.HasOne("LynxBooks.Backend.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Wishlists")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -310,6 +310,8 @@ namespace lynxbooksback.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Sessions");
+
+                    b.Navigation("Wishlists");
                 });
 #pragma warning restore 612, 618
         }

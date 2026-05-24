@@ -99,7 +99,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(frontendUrl)
+        policy.WithOrigins(frontendUrl, "http://10.70.146.189:5173")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

@@ -12,15 +12,15 @@ public class AppDbContext : DbContext
     public DbSet<Book> Books { get; set; }
     public DbSet<Session> Sessions { get; set; }
     public DbSet<Wishlist> Wishlists { get; set; }
+    public DbSet<SharedLink> SharedLinks { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Уникальный email
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
 
-        // Каскадное удаление: при удалении пользователя удаляются его книги и сессии
         modelBuilder.Entity<Book>()
             .HasOne(b => b.User)
             .WithMany(u => u.Books)
@@ -39,14 +39,12 @@ public class AppDbContext : DbContext
             .HasForeignKey(w => w.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Связь сессии с книгой
         modelBuilder.Entity<Session>()
             .HasOne(s => s.Book)
             .WithMany(b => b.Sessions)
             .HasForeignKey(s => s.BookId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Индексы для ускорения запросов
         modelBuilder.Entity<Session>()
             .HasIndex(s => s.Date);
         modelBuilder.Entity<Session>()
@@ -58,5 +56,28 @@ public class AppDbContext : DbContext
             .HasIndex(w => new { w.UserId, w.Priority });
         modelBuilder.Entity<Wishlist>()
             .HasIndex(w => w.UserId);
+            
+        modelBuilder.Entity<SharedLink>()
+            .HasIndex(s => s.Token)
+            .IsUnique();
+        modelBuilder.Entity<SharedLink>()
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Subscription>()
+            .HasIndex(s => new { s.SubscriberUserId, s.TargetUserId, s.ListType })
+            .IsUnique();
+        modelBuilder.Entity<Subscription>()
+            .HasOne(s => s.Subscriber)
+            .WithMany()
+            .HasForeignKey(s => s.SubscriberUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Subscription>()
+            .HasOne(s => s.TargetUser)
+            .WithMany()
+            .HasForeignKey(s => s.TargetUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

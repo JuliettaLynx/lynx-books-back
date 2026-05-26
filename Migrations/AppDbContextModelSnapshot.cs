@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace lynxbooksback.Migrations
+namespace lynxbooksbackv2.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -49,6 +49,9 @@ namespace lynxbooksback.Migrations
 
                     b.Property<int>("Rating")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Review")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -158,6 +161,70 @@ namespace lynxbooksback.Migrations
                     b.ToTable("Sessions");
                 });
 
+            modelBuilder.Entity("LynxBooks.Backend.Models.SharedLink", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("GrantsLibraryAccess")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("GrantsWishlistAccess")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SharedLinks");
+                });
+
+            modelBuilder.Entity("LynxBooks.Backend.Models.Subscription", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ListType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SubscriberUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TargetUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetUserId");
+
+                    b.HasIndex("SubscriberUserId", "TargetUserId", "ListType")
+                        .IsUnique();
+
+                    b.ToTable("Subscriptions");
+                });
+
             modelBuilder.Entity("LynxBooks.Backend.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -180,6 +247,12 @@ namespace lynxbooksback.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsGoogleAccount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsLibraryPublic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsWishlistPublic")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("OriginalAvatar")
@@ -215,6 +288,12 @@ namespace lynxbooksback.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("OriginalCover")
@@ -285,6 +364,36 @@ namespace lynxbooksback.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LynxBooks.Backend.Models.SharedLink", b =>
+                {
+                    b.HasOne("LynxBooks.Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LynxBooks.Backend.Models.Subscription", b =>
+                {
+                    b.HasOne("LynxBooks.Backend.Models.User", "Subscriber")
+                        .WithMany()
+                        .HasForeignKey("SubscriberUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LynxBooks.Backend.Models.User", "TargetUser")
+                        .WithMany()
+                        .HasForeignKey("TargetUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscriber");
+
+                    b.Navigation("TargetUser");
                 });
 
             modelBuilder.Entity("LynxBooks.Backend.Models.Wishlist", b =>

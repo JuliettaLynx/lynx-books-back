@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace lynxbooksback.Migrations
+namespace lynxbooksbackv2.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -23,6 +23,8 @@ namespace lynxbooksback.Migrations
                     OriginalAvatar = table.Column<string>(type: "TEXT", nullable: true),
                     DailyGoal = table.Column<int>(type: "INTEGER", nullable: false),
                     IsGoogleAccount = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsLibraryPublic = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsWishlistPublic = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -42,6 +44,7 @@ namespace lynxbooksback.Migrations
                     Format = table.Column<string>(type: "TEXT", nullable: false),
                     Status = table.Column<string>(type: "TEXT", nullable: false),
                     Rating = table.Column<int>(type: "INTEGER", nullable: false),
+                    Review = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Cover = table.Column<string>(type: "TEXT", nullable: true),
                     OriginalCover = table.Column<string>(type: "TEXT", nullable: true),
@@ -84,6 +87,56 @@ namespace lynxbooksback.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SharedLinks",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    GrantsLibraryAccess = table.Column<bool>(type: "INTEGER", nullable: false),
+                    GrantsWishlistAccess = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Token = table.Column<string>(type: "TEXT", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SharedLinks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SharedLinks_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    ListType = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    SubscriberUserId = table.Column<string>(type: "TEXT", nullable: false),
+                    TargetUserId = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Users_SubscriberUserId",
+                        column: x => x.SubscriberUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_Users_TargetUserId",
+                        column: x => x.TargetUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Wishlists",
                 columns: table => new
                 {
@@ -93,6 +146,8 @@ namespace lynxbooksback.Migrations
                     Publisher = table.Column<string>(type: "TEXT", nullable: true),
                     Cover = table.Column<string>(type: "TEXT", nullable: true),
                     OriginalCover = table.Column<string>(type: "TEXT", nullable: true),
+                    Note = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
                     Binding = table.Column<string>(type: "TEXT", nullable: false),
                     Priority = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -172,6 +227,28 @@ namespace lynxbooksback.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SharedLinks_Token",
+                table: "SharedLinks",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SharedLinks_UserId",
+                table: "SharedLinks",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_SubscriberUserId_TargetUserId_ListType",
+                table: "Subscriptions",
+                columns: new[] { "SubscriberUserId", "TargetUserId", "ListType" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_TargetUserId",
+                table: "Subscriptions",
+                column: "TargetUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
@@ -196,6 +273,12 @@ namespace lynxbooksback.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sessions");
+
+            migrationBuilder.DropTable(
+                name: "SharedLinks");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions");
 
             migrationBuilder.DropTable(
                 name: "Wishlists");

@@ -1,6 +1,0 @@
-@lynx_books_back_HostAddress = http://localhost:5245
-
-GET {{lynx_books_back_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

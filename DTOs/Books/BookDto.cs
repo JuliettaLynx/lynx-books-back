@@ -9,6 +9,7 @@ public class BookDto
     public string Format { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public int Rating { get; set; }
+    public string? Review { get; set; }
     public string? Description { get; set; }
     public string? Cover { get; set; }
     public string? OriginalCover { get; set; }

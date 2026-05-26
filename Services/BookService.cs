@@ -67,6 +67,7 @@ public class BookService : IBookService
             Format = request.Format,
             Status = request.Status,
             Rating = request.Rating,
+            Review = request.Review,
             Description = request.Description,
             Cover = request.Cover,
             OriginalCover = request.OriginalCover,
@@ -89,6 +90,7 @@ public class BookService : IBookService
         book.Format = request.Format;
         book.Status = request.Status;
         book.Rating = request.Rating;
+        book.Review = request.Review;
         book.Description = request.Description;
         book.Cover = request.Cover;
         book.OriginalCover = request.OriginalCover;
@@ -126,6 +128,7 @@ public class BookService : IBookService
         Format = book.Format,
         Status = book.Status,
         Rating = book.Rating,
+        Review = book.Review,
         Description = book.Description,
         Cover = book.Cover,
         OriginalCover = book.OriginalCover,

@@ -13,6 +13,7 @@ public class Book
     public string Format { get; set; } = "бумажная"; // бумажная, электронная, аудио
     public string Status { get; set; } = "не прочитано";
     public int Rating { get; set; } = 0;
+    public string? Review { get; set; }
     public string? Description { get; set; }
     public string? Cover { get; set; }        // Base64 превью (200x300)
     public string? OriginalCover { get; set; } // Base64 оригинал (не кэшируем офлайн)

@@ -57,6 +57,8 @@ public class WishlistService : IWishlistService
             OriginalCover = request.OriginalCover,
             Binding = request.Binding,
             Priority = request.Priority,
+            Note = request.Note,
+            Description = request.Description,
             UserId = userId
         };
 
@@ -79,6 +81,8 @@ public class WishlistService : IWishlistService
             book.Publisher = request.Publisher;
         book.Cover = request.Cover;
         book.OriginalCover = request.OriginalCover; 
+        book.Note = request.Note;
+        book.Description = request.Description;
         if (!string.IsNullOrWhiteSpace(request.Binding))
             book.Binding = request.Binding;
         if (request.Priority.HasValue && request.Priority.Value >= 1 && request.Priority.Value <= 6)
@@ -105,6 +109,7 @@ public class WishlistService : IWishlistService
                 Publisher = wishlistBook.Publisher,
                 Cover = wishlistBook.Cover,
                 OriginalCover = wishlistBook.OriginalCover,
+                Description = wishlistBook.Description,
                 Format = "бумажная",
                 Status = "не прочитано",
                 Rating = 0,
@@ -127,6 +132,8 @@ public class WishlistService : IWishlistService
         Publisher = book.Publisher,
         Cover = book.Cover,
         OriginalCover = book.OriginalCover,
+        Description = book.Description,
+        Note = book.Note,
         Binding = book.Binding,
         Priority = book.Priority,
         CreatedAt = book.CreatedAt,

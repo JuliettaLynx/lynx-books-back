@@ -9,6 +9,8 @@ public class WishlistDto
     public string? Cover { get; set; }
     public string? OriginalCover { get; set; }
     public string Binding { get; set; } = "твердый";
+    public string? Note { get; set; }
+    public string? Description { get; set; }
     public int Priority { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

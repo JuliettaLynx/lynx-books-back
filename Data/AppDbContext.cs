@@ -71,12 +71,12 @@ public class AppDbContext : DbContext
             .IsUnique();
         modelBuilder.Entity<Subscription>()
             .HasOne(s => s.Subscriber)
-            .WithMany()
+            .WithMany(u => u.SubscriptionsAsSubscriber)
             .HasForeignKey(s => s.SubscriberUserId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Subscription>()
             .HasOne(s => s.TargetUser)
-            .WithMany()
+            .WithMany(u => u.SubscriptionsAsTarget)
             .HasForeignKey(s => s.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

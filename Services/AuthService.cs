@@ -168,9 +168,18 @@ public class AuthService : IAuthService
 
     public async Task<bool> DeleteAccountAsync(string userId)
     {
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _context.Users
+            .Include(u => u.RefreshTokens)
+            .Include(u => u.Books)
+            .Include(u => u.Sessions)
+            .Include(u => u.Wishlists)
+            .Include(u => u.SubscriptionsAsSubscriber)
+            .Include(u => u.SubscriptionsAsTarget)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        
         if (user == null) return false;
 
+        // Все каскадные удаления теперь работают благодаря OnDelete(Cascade)
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
         return true;

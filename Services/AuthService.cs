@@ -3,6 +3,9 @@ using LynxBooks.Backend.DTOs.Auth;
 using LynxBooks.Backend.Models;
 using LynxBooks.Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace LynxBooks.Backend.Services;
 
@@ -10,11 +13,13 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly JwtService _jwtService;
+    private readonly IConfiguration _configuration;
 
-    public AuthService(AppDbContext context, JwtService jwtService)
+    public AuthService(AppDbContext context, JwtService jwtService, IConfiguration configuration)
     {
         _context = context;
         _jwtService = jwtService;
+        _configuration = configuration;
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
@@ -59,6 +64,50 @@ public class AuthService : IAuthService
 
         var user = token.User;
         return await GenerateAuthResponse(user);
+    }
+
+    public async Task<AuthResponse> GoogleSignInAsync(GoogleSignInRequest request)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(request.Credential);
+
+            var email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+            var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            var picture = jwtToken.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+            var googleId = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+
+            if (string.IsNullOrEmpty(email))
+                throw new UnauthorizedAccessException("Invalid Google token");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    DisplayName = name ?? email.Split('@')[0],
+                    Avatar = picture,
+                    IsGoogleAccount = true,
+                    PasswordHash = null
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+            else if (!user.IsGoogleAccount)
+            {
+                throw new UnauthorizedAccessException("This email is registered with password. Please login with password first.");
+            }
+
+            return await GenerateAuthResponse(user);
+        }
+        catch (Exception ex)
+        {
+            throw new UnauthorizedAccessException($"Invalid Google token: {ex.Message}");
+        }
     }
 
     public async Task<UserDto?> GetUserByIdAsync(string userId)

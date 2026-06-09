@@ -45,6 +45,20 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("google")]
+    public async Task<ActionResult<AuthResponse>> GoogleSignIn(GoogleSignInRequest request)
+    {
+        try
+        {
+            var response = await _authService.GoogleSignInAsync(request);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new ErrorResponse { Message = ex.Message });
+        }
+    }
+
     [HttpPost("refresh")]
     public async Task<ActionResult<AuthResponse>> Refresh(RefreshRequest request)
     {
@@ -84,7 +98,7 @@ public class AuthController : ControllerBase
         }
         catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized(new { message = ex.Message }); // "Current password is incorrect"
+            return Unauthorized(new { message = ex.Message });
         }
         catch (Exception ex)
         {

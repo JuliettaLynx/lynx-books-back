@@ -25,8 +25,6 @@ else
         opt.UseSqlite(sqliteConnection));
 }
 
-
-
 // JWT аутентификация
 var jwtKey = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -87,7 +85,6 @@ builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<ICommunityService, CommunityService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<JwtService>();
-// builder.Services.AddHttpClient<GoogleAuthService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS – разрешаем фронтенд (значение из конфигурации)

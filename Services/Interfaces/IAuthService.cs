@@ -10,4 +10,5 @@ public interface IAuthService
     Task<UserDto?> GetUserByIdAsync(string userId);
     Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest request);
     Task<bool> DeleteAccountAsync(string userId);
+    Task<AuthResponse> GoogleSignInAsync(GoogleSignInRequest request);
 }

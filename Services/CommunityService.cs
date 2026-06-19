@@ -90,21 +90,27 @@ public class CommunityService : ICommunityService
         if (string.IsNullOrWhiteSpace(query)) 
             return Enumerable.Empty<UserSearchResultDto>();
 
+        var normalizedQuery = query.ToLower();
+
         var users = await _context.Users
-            .Where(u => u.Id != currentUserId && 
-                ((u.DisplayName != null && u.DisplayName.Contains(query)) || u.Email.Contains(query)))
+            .Where(u => u.Id != currentUserId)
+            .Take(100)
+            .ToListAsync();
+
+        var filtered = users
+            .Where(u => u.DisplayName.ToLower().Contains(normalizedQuery))
             .Take(10)
             .Select(u => new UserSearchResultDto
             {
                 Id = u.Id,
-                DisplayName = u.DisplayName ?? u.Email,
+                DisplayName = u.DisplayName,
                 Email = u.Email,
                 IsLibraryPublic = u.IsLibraryPublic,
                 IsWishlistPublic = u.IsWishlistPublic,
                 Avatar = u.Avatar
-            })
-            .ToListAsync();
-        return users;
+            });
+
+        return filtered;
     }
 
     public async Task SubscribeAsync(string subscriberId, string targetUserId, string? listType = null)

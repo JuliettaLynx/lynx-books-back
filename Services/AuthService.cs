@@ -76,8 +76,7 @@ public class AuthService : IAuthService
             var email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
             var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
             var picture = jwtToken.Claims.FirstOrDefault(c => c.Type == "picture")?.Value;
-            var googleId = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-
+            
             if (string.IsNullOrEmpty(email))
                 throw new UnauthorizedAccessException("Invalid Google token");
 
@@ -85,11 +84,29 @@ public class AuthService : IAuthService
 
             if (user == null)
             {
+                // Скачиваем аватар и конвертируем в Base64
+                string? avatarBase64 = null;
+                if (!string.IsNullOrEmpty(picture))
+                {
+                    try
+                    {
+                        using var httpClient = new HttpClient();
+                        var imageBytes = await httpClient.GetByteArrayAsync(picture);
+                        avatarBase64 = $"data:image/jpeg;base64,{Convert.ToBase64String(imageBytes)}";
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to download avatar: {ex.Message}");
+                        // Продолжаем без аватара
+                    }
+                }
+
                 user = new User
                 {
                     Email = email,
                     DisplayName = name ?? email.Split('@')[0],
-                    Avatar = picture,
+                    Avatar = avatarBase64,        // Base64 вместо URL
+                    OriginalAvatar = avatarBase64, // Base64 вместо URL
                     IsGoogleAccount = true,
                     PasswordHash = null
                 };
@@ -99,7 +116,29 @@ public class AuthService : IAuthService
             }
             else if (!user.IsGoogleAccount)
             {
-                throw new UnauthorizedAccessException("This email is registered with password. Please login with password first.");
+                throw new UnauthorizedAccessException("This email is registered with password.");
+            }
+            else
+            {
+                // Обновляем аватар если изменился
+                if (!string.IsNullOrEmpty(picture) && user.Avatar != picture)
+                {
+                    try
+                    {
+                        using var httpClient = new HttpClient();
+                        var imageBytes = await httpClient.GetByteArrayAsync(picture);
+                        var avatarBase64 = $"data:image/jpeg;base64,{Convert.ToBase64String(imageBytes)}";
+                        
+                        user.Avatar = avatarBase64;
+                        user.OriginalAvatar = avatarBase64;
+                        user.UpdatedAt = DateTime.UtcNow;
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to update avatar: {ex.Message}");
+                    }
+                }
             }
 
             return await GenerateAuthResponse(user);
@@ -147,9 +186,11 @@ public class AuthService : IAuthService
         Email = user.Email,
         DisplayName = user.DisplayName,
         Avatar = user.Avatar,
+        OriginalAvatar = user.OriginalAvatar,
         DailyGoal = user.DailyGoal,
         IsGoogleAccount = user.IsGoogleAccount,
-        CreatedAt = user.CreatedAt
+        CreatedAt = user.CreatedAt,
+        UpdatedAt = user.UpdatedAt
     };
 
     public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest request)

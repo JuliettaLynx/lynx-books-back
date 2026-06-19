@@ -21,6 +21,14 @@ public class ErrorHandlingMiddleware
         {
             await _next(context);
         }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Validation error: {Message}", ex.Message);
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.ContentType = "application/json";
+            var error = new ErrorResponse { Message = ex.Message };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(error));
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception");

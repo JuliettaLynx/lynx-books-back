@@ -7,7 +7,9 @@ public class User
     [Key]
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Email { get; set; } = string.Empty;
-    public string? DisplayName { get; set; }
+    [Required]
+    [StringLength(100, MinimumLength = 1)]
+    public string DisplayName { get; set; } = string.Empty;
     public string? PasswordHash { get; set; }
     public string? Avatar { get; set; }
     public string? OriginalAvatar { get; set; }
@@ -21,4 +23,6 @@ public class User
     public List<Book> Books { get; set; } = new();
     public List<Session> Sessions { get; set; } = new();
     public List<Wishlist> Wishlists { get; set; } = new();
+    public List<Subscription> SubscriptionsAsSubscriber { get; set; } = new();
+    public List<Subscription> SubscriptionsAsTarget { get; set; } = new();
 }

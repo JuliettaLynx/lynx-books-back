@@ -27,8 +27,22 @@ public class UserService : IUserService
         var user = await _context.Users.FindAsync(userId);
         if (user == null) return false;
 
-        if (!string.IsNullOrWhiteSpace(request.DisplayName))
-            user.DisplayName = request.DisplayName;
+        if (request.DisplayName != null)
+        {
+            var trimmedName = request.DisplayName.Trim();
+            
+            if (string.IsNullOrWhiteSpace(trimmedName))
+            {
+                throw new ArgumentException("Имя пользователя не может быть пустым или состоять только из пробелов");
+            }
+            
+            if (trimmedName.Length > 100)
+            {
+                throw new ArgumentException("Имя пользователя не может быть длиннее 100 символов");
+            }
+
+            user.DisplayName = trimmedName;
+        }
 
         user.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
